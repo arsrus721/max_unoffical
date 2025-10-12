@@ -14,6 +14,8 @@ Install the `websocket-client` library:
 pip install websocket-client
 ```
 
+Example code
+
 ```python
 
 import json
