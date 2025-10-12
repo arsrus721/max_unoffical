@@ -19,9 +19,9 @@ class ChatClient:
             ("User-Agent", self.user_agent)
         ]
         self.ws = create_connection(self.url, header=[f"{h[0]}: {h[1]}" for h in headers])
-        print("✅ Соединение установлено")
+        print("✅ Connection established")
         self.running = True
-        # Можно сразу отправить handshake
+        # Optionally, send handshake immediately
         self.send_handshake()
 
     def send_handshake(self):
@@ -44,14 +44,14 @@ class ChatClient:
         self.send(payload)
 
     def subscribe_chat(self, chat_id):
-        """Подписка на чат для получения сообщений"""
+        """Subscribe to a chat to receive messages"""
         self.seq += 1
         payload = {"ver": 11, "cmd": 0, "seq": self.seq, "opcode": 65, "payload": {"chatId": chat_id, "type": "TEXT"}}
         self.send(payload)
-        print(f"✅ Подписка на чат ID {chat_id}")
+        print(f"✅ Subscribed to chat ID {chat_id}")
 
     def send_message(self, chat_id, text):
-        """Отправка сообщения в чат"""
+        """Send a message to a chat"""
         self.seq += 1
         payload = {
             "ver": 11,
@@ -70,24 +70,24 @@ class ChatClient:
             }
         }
         self.send(payload)
-        print(f"💬 Сообщение отправлено в чат {chat_id}: {text}")
+        print(f"💬 Message sent to chat {chat_id}: {text}")
 
     def send(self, data):
-        """Отправка произвольного JSON payload"""
+        """Send an arbitrary JSON payload"""
         if self.ws:
             self.ws.send(json.dumps(data))
 
     def receive_loop(self, callback):
-        """Бесконечный цикл для обработки входящих сообщений"""
+        """Infinite loop to handle incoming messages"""
         try:
             while self.running:
                 try:
                     message = self.ws.recv()
                 except WebSocketConnectionClosedException:
-                    print("❌ WebSocket закрыт сервером")
+                    print("❌ WebSocket closed by server")
                     break
                 except Exception as e:
-                    print(f"⚠ Ошибка при получении сообщения: {e}")
+                    print(f"⚠ Error receiving message: {e}")
                     continue
 
                 if not message:
@@ -100,7 +100,7 @@ class ChatClient:
             self.ws.close()
 
     def start_keepalive(self, interval=30):
-        """Отправка ping/pong каждые interval секунд"""
+        """Send ping/pong every `interval` seconds"""
         def keepalive():
             while self.running:
                 self.seq += 1
