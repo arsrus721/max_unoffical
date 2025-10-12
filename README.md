@@ -12,6 +12,7 @@ Install the `websocket-client` library:
 
 ```bash
 pip install websocket-client
+```
 
 ```python
 
