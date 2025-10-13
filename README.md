@@ -41,7 +41,7 @@ pip install websocket-client
 pip install websocket-client
 ```
 
-#Пример кода
+## Пример кода
 
 ```python
 import json
