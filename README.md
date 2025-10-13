@@ -1,41 +1,67 @@
-# WebSocket Chat Client Example
+# MAX WebSocket Chat Client Example
 
-This example demonstrates how to connect to a WebSocket chat server, subscribe to a chat, receive messages, handle **ping-pong/keepalive**, and send messages interactively, all in one script **without using additional functions**.  
+## English
 
-It is written in Python and can be used as a template for future projects where you want to receive and send messages simultaneously.
+This example demonstrates how to interact with the MAX messenger via WebSocket.  
+It is an **unofficial MAX client** that allows you to:
 
----
+- Connect to the MAX WebSocket server
+- Subscribe to a chat
+- Receive and send messages interactively
+- Handle ping-pong / keepalive to maintain the connection
 
-## Requirements
+It is written in Python and can be used as a template for projects where you want to receive and send messages simultaneously **without additional functions**.
+
+### Requirements
 
 Install the `websocket-client` library:
 
 ```bash
 pip install websocket-client
 ```
+# Пример WebSocket клиента для чата MAX
 
-Example code
+## Описание
+
+Этот пример показывает, как работать с мессенджером **MAX** через WebSocket.  
+Это **неофициальный клиент MAX**, который позволяет:
+
+- Подключаться к WebSocket-серверу MAX
+- Подписываться на чат
+- Получать и отправлять сообщения интерактивно
+- Обрабатывать ping-pong / поддерживать соединение
+
+Код написан на Python и может служить шаблоном для проектов, где требуется одновременно получать и отправлять сообщения **без дополнительных функций**.
+
+## Требования
+
+Установите библиотеку `websocket-client`:
+
+```bash
+pip install websocket-client
+```
+
+#Пример кода
 
 ```python
-
 import json
 import time
 from websocket import create_connection, WebSocketConnectionClosedException
 
-# WebSocket server URL
+# URL WebSocket сервера
 url = "wss://ws-api.oneme.ru/websocket"
 
-# Token (replace with your own)
+# Токен (замените на свой)
 token = "YOUR_TOKEN_HERE"
 
-# Chat to watch
+# Чат для наблюдения
 WATCH_CHAT_ID = -68322721120347
 
-# Connect to the WebSocket
+# Подключение к WebSocket
 ws = create_connection(url)
-print("✅ Connection established")
+print("✅ Подключение установлено")
 
-# Send initial handshake
+# Отправка начального handshake
 init_payload = {
     "ver": 11,
     "cmd": 0,
@@ -53,9 +79,9 @@ init_payload = {
 }
 ws.send(json.dumps(init_payload))
 response = ws.recv()
-print("Handshake response:", response)
+print("Ответ на handshake:", response)
 
-# Subscribe to the chat
+# Подписка на чат
 subscribe_payload = {
     "ver": 11,
     "cmd": 0,
@@ -64,28 +90,28 @@ subscribe_payload = {
     "payload": {"chatId": WATCH_CHAT_ID, "type": "TEXT"}
 }
 ws.send(json.dumps(subscribe_payload))
-print(f"✅ Subscribed to chat {WATCH_CHAT_ID}")
+print(f"✅ Подписка на чат {WATCH_CHAT_ID} выполнена")
 
-# Keep track of last ping time
+# Отслеживание времени последнего ping
 last_ping = time.time()
 
-print("⚡ Ready to receive and send messages")
+print("⚡ Готов к получению и отправке сообщений")
 while True:
-    # Ping-pong every 30 seconds
+    # Отправка ping каждые 30 секунд
     if time.time() - last_ping > 30:
         ping_payload = {"ver": 11, "cmd": 0, "seq": 999, "opcode": 1, "payload": {"interactive": False}}
         ws.send(json.dumps(ping_payload))
-        print("⏳ Sent ping")
+        print("⏳ Отправлен ping")
         last_ping = time.time()
 
-    # Receive messages
+    # Получение сообщений
     try:
         message = ws.recv()
     except WebSocketConnectionClosedException as e:
-        print(f"❌ WebSocket closed: {e}")
+        print(f"❌ WebSocket закрыт: {e}")
         break
     except Exception as e:
-        print(f"⚠ Error receiving message: {e}")
+        print(f"⚠ Ошибка при получении сообщения: {e}")
         continue
 
     if not message:
@@ -103,16 +129,16 @@ while True:
         sender = msg.get("sender")
         text = msg.get("text", "")
 
-        # Change sender name for a specific ID
+        # Переименование отправителя для конкретного ID
         if sender == 49048155:
             sender_name = "Ilmira Akhmetovna"
         else:
             sender_name = str(sender)
 
-        print(f"💬 New message in chat {chat_id} from {sender_name}: {text}")
+        print(f"💬 Новое сообщение в чате {chat_id} от {sender_name}: {text}")
 
-    # Interactive sending
-    user_input = input("Enter message to send (or 'exit' to quit): ")
+    # Интерактивная отправка
+    user_input = input("Введите сообщение для отправки (или 'exit' для выхода): ")
     if user_input.lower() == "exit":
         break
     send_payload = {
@@ -127,8 +153,9 @@ while True:
         }
     }
     ws.send(json.dumps(send_payload))
-    print(f"📤 Sent message: {user_input}")
+    print(f"📤 Отправлено сообщение: {user_input}")
 
-# Close WebSocket gracefully
+# Корректное закрытие WebSocket
 ws.close()
-print("🛑 WebSocket closed")
+print("🛑 WebSocket закрыт")
+```
